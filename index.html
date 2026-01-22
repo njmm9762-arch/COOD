@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Secure Access</title>
+
+<style>
+:root{
+  --bg:#050b08;--card:#0b1511;--fg:#00ff9c;--line:rgba(0,255,156,.35);
+  --glow:0 0 18px rgba(0,255,156,.35);
+}
+.light{
+  --bg:#f4f6f6;--card:#ffffff;--fg:#0a7;--line:rgba(0,160,120,.35);
+  --glow:0 0 12px rgba(0,160,120,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Consolas,monospace}
+.wrap{max-width:420px;margin:auto;padding:14px;animation:boot .9s ease}
+@keyframes boot{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.hdr{letter-spacing:2px;font-size:16px;text-shadow:var(--glow)}
+.gear{cursor:pointer;font-size:18px}
+
+.card{
+  background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.8));
+  border:1px solid var(--line);box-shadow:var(--glow);
+  border-radius:14px;padding:14px;margin-bottom:14px;
+  animation:float 3s ease-in-out infinite
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+.label{font-size:12px;opacity:.9;margin-bottom:8px}
+.row{display:flex;gap:8px}
+.code{
+  flex:1;background:#020806;border:1px dashed var(--line);
+  border-radius:10px;padding:12px;text-align:center;letter-spacing:1px;
+  box-shadow:inset 0 0 10px rgba(0,255,156,.15)
+}
+.btn{
+  background:transparent;color:var(--fg);border:1px solid var(--line);
+  border-radius:10px;padding:10px 12px;cursor:pointer;box-shadow:var(--glow)
+}
+.btn:active{transform:scale(.96)}
+
+.settings{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center
+}
+.setbox{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:16px;width:85%;max-width:320px;
+  box-shadow:var(--glow)
+}
+.setbox h3{text-align:center;margin-top:0}
+.opt{display:flex;justify-content:space-between;margin:10px 0}
+.toast{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+  background:#02110c;border:1px solid var(--line);
+  padding:8px 12px;border-radius:10px;display:none;box-shadow:var(--glow)
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="hdr" id="title">SECURE ACCESS CODES</div>
+    <div class="gear" onclick="openSet()">⚙️</div>
+  </div>
+
+  <div class="card">
+    <div class="label" data-en="Primary Access" data-ar="الدخول الرئيسي"></div>
+    <div class="row">
+      <div class="code" id="c1">DD-7A9F-42XQ-91LM</div>
+      <button class="btn" onclick="copy('c1')">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label" data-en="Secondary Gate" data-ar="البوابة الثانوية"></div>
+    <div class="row">
+      <div class="code" id="c2">CH-88QZ-KA20-PL5E</div>
+      <button class="btn" onclick="copy('c2')">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label" data-en="Node Authorization" data-ar="تفويض العقدة"></div>
+    <div class="row">
+      <div class="code" id="c3">NX-4DCH-9X72-AQ0M</div>
+      <button class="btn" onclick="copy('c3')">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label" data-en="Security Bridge" data-ar="جسر الأمان"></div>
+    <div class="row">
+      <div class="code" id="c4">ZK-00A9-CH77-EDX4</div>
+      <button class="btn" onclick="copy('c4')">Copy</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label" data-en="System Lock" data-ar="قفل النظام"></div>
+    <div class="row">
+      <div class="code" id="c5">SYS-CH5X-998A-LOCK</div>
+      <button class="btn" onclick="copy('c5')">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings" id="set">
+  <div class="setbox">
+    <h3>SETTINGS</h3>
+    <div class="opt">
+      <span>Dark / Light</span>
+      <button class="btn" onclick="toggleTheme()">Toggle</button>
+    </div>
+    <div class="opt">
+      <span>Language</span>
+      <div>
+        <button class="btn" onclick="setLang('en')">EN</button>
+        <button class="btn" onclick="setLang('ar')">AR</button>
+      </div>
+    </div>
+    <button class="btn" style="width:100%" onclick="closeSet()">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied ✓</div>
+
+<audio id="beep" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
+
+<script>
+const toast=document.getElementById('toast');
+function copy(id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText);
+  toast.style.display='block';
+  setTimeout(()=>toast.style.display='none',1200);
+  if(navigator.vibrate) navigator.vibrate(40);
+  document.getElementById('beep').play();
+}
+function openSet(){document.getElementById('set').style.display='flex'}
+function closeSet(){document.getElementById('set').style.display='none'}
+function toggleTheme(){document.body.classList.toggle('light')}
+function setLang(l){
+  document.documentElement.lang=l;
+  document.documentElement.dir=l==='ar'?'rtl':'ltr';
+  document.getElementById('title').innerText=l==='ar'?'أكواد الوصول الآمن':'SECURE ACCESS CODES';
+  document.querySelectorAll('.label').forEach(e=>{
+    e.innerText=e.dataset[l];
+  });
+}
+setLang('en');
+</script>
+</body>
+</html>
